@@ -61,6 +61,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     // If the URL does not include the module's prefix, we must return true since while our module cannot handle the link, other modules might be and returning false can prevent
     // them from getting the chance to.
     // Reference: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application
+    #if !TARGET_OS_EXTENSION
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
         if let url = launchOptions[UIApplication.LaunchOptionsKey.url] as? URL {
             if (hasMatchingSchemePrefix(url: url)) {
@@ -82,18 +83,21 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
         }
         return true
     }
+    #endif
     
     // This is the function called on resuming the app from a shared link.
     // It handles requests to open a resource by a specified URL. Returning true means that it was handled successfully, false means the attempt to open the resource failed.
     // If the URL includes the module's ShareMedia prefix, then we process the URL and return true if we know how to handle that kind of URL or false if we are not able to.
     // If the URL does not include the module's prefix, then we return false to indicate our module's attempt to open the resource failed and others should be allowed to.
     // Reference: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application
+    #if !TARGET_OS_EXTENSION
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if (hasMatchingSchemePrefix(url: url)) {
             return handleUrl(url: url, setInitialData: false)
         }
         return false
     }
+    #endif
     
     // This function is called by other modules like Firebase DeepLinks.
     // It tells the delegate that data for continuing an activity is available. Returning true means that our module handled the activity and that others do not have to. Returning false tells
@@ -101,6 +105,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     // If the URL includes the module's ShareMedia prefix, then we process the URL and return true if we know how to handle that kind of URL or false if we are not able to.
     // If the URL does not include the module's prefix, then we must return false to indicate that this module did not handle the prefix and that other modules should try to.
     // Reference: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application
+    #if !TARGET_OS_EXTENSION
     public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]) -> Void) -> Bool {
         if let url = userActivity.webpageURL {
             if (hasMatchingSchemePrefix(url: url)) {
@@ -109,6 +114,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
         }
         return false
     }
+    #endif
     
     private func handleUrl(url: URL?, setInitialData: Bool) -> Bool {
         let appGroupId = Bundle.main.object(forInfoDictionaryKey: kAppGroupIdKey) as? String
