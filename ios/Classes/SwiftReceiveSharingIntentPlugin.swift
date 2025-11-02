@@ -27,7 +27,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
         
         let chargingChannelMedia = FlutterEventChannel(name: kEventsChannelMedia, binaryMessenger: registrar.messenger())
         chargingChannelMedia.setStreamHandler(instance)
-        #if !TARGET_OS_EXTENSION
+        #if !IS_SHARE_EXTENSION
         registrar.addApplicationDelegate(instance)
         #endif
     }
@@ -61,7 +61,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     // If the URL does not include the module's prefix, we must return true since while our module cannot handle the link, other modules might be and returning false can prevent
     // them from getting the chance to.
     // Reference: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application
-    #if !TARGET_OS_EXTENSION
+    #if !IS_SHARE_EXTENSION
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
         if let url = launchOptions[UIApplication.LaunchOptionsKey.url] as? URL {
             if (hasMatchingSchemePrefix(url: url)) {
@@ -90,7 +90,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     // If the URL includes the module's ShareMedia prefix, then we process the URL and return true if we know how to handle that kind of URL or false if we are not able to.
     // If the URL does not include the module's prefix, then we return false to indicate our module's attempt to open the resource failed and others should be allowed to.
     // Reference: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application
-    #if !TARGET_OS_EXTENSION
+    #if !IS_SHARE_EXTENSION
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if (hasMatchingSchemePrefix(url: url)) {
             return handleUrl(url: url, setInitialData: false)
@@ -105,7 +105,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     // If the URL includes the module's ShareMedia prefix, then we process the URL and return true if we know how to handle that kind of URL or false if we are not able to.
     // If the URL does not include the module's prefix, then we must return false to indicate that this module did not handle the prefix and that other modules should try to.
     // Reference: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application
-    #if !TARGET_OS_EXTENSION
+    #if !IS_SHARE_EXTENSION
     public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]) -> Void) -> Bool {
         if let url = userActivity.webpageURL {
             if (hasMatchingSchemePrefix(url: url)) {
